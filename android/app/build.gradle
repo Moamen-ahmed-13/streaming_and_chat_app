@@ -1,0 +1,63 @@
+plugins {
+    id("com.android.application")
+    // START: FlutterFire Configuration
+    id("com.google.gms.google-services")
+    // END: FlutterFire Configuration
+    id("kotlin-android")
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id("dev.flutter.flutter-gradle-plugin")
+}
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+android {
+    namespace = "com.example.streaming_and_chat_app"
+    compileSdkVersion 36  // Updated from flutter.compileSdkVersion if it was lower
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_17  // Changed from VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_17  // Changed from VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'  // Changed from '1.8'
+    }
+
+    defaultConfig {
+        applicationId "com.example.streaming_and_chat_app"
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 36  // Update this
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+    buildTypes {
+        release {
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+}
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
+}
+apply plugin: 'com.google.gms.google-services'
+flutter {
+    source = "../.."
+}
