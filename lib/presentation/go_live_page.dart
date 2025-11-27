@@ -119,46 +119,63 @@ class _GoLivePageState extends State<GoLivePage> {
   }
 
   Widget _buildSetupView(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Spacer(),
-          const Icon(Icons.videocam, size: 80, color: Colors.purple),
-          const SizedBox(height: 24),
-          const Text(
-            'Ready to Go Live?',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 48),
-          TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(
-              labelText: 'Stream Title',
-              border: OutlineInputBorder(),
-              hintText: 'What are you streaming?',
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Spacer(),
+            const Icon(Icons.videocam, size: 80, color: Colors.purple),
+            const SizedBox(height: 24),
+            const Text(
+              'Ready to Go Live?',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            maxLength: 50,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () => _startStream(context),
-            icon: const Icon(Icons.play_arrow),
-            label: const Text('Start Streaming'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.all(16),
-              backgroundColor: Colors.red,
+            const SizedBox(height: 48),
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(
+                labelText: 'Stream Title',
+                border: OutlineInputBorder(),
+                hintText: 'What are you streaming?',
+              ),
+              maxLength: 50,
             ),
-          ),
-          const Spacer(),
-        ],
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => _startStream(context),
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('Start Streaming'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(16),
+                backgroundColor: Colors.red,
+              ),
+            ),
+            const Spacer(),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildLiveView(BuildContext context, BroadcasterLive state) {
+    final agoraEngine = getIt<AgoraService>().engine;
+    
+    if (agoraEngine == null) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Initializing stream...'),
+          ],
+        ),
+      );
+    }
+
     return BlocProvider(
       create: (_) => getIt<ChatCubit>(param1: state.stream.id)..loadMessages(),
       child: Stack(
@@ -167,13 +184,13 @@ class _GoLivePageState extends State<GoLivePage> {
           Center(
             child: AgoraVideoView(
               controller: VideoViewController(
-                rtcEngine: getIt<AgoraService>().engine,
+                rtcEngine: agoraEngine,
                 canvas: const VideoCanvas(uid: 0),
               ),
             ),
           ),
 
-          // Top bar
+          // Top bar and chat
           SafeArea(
             child: Column(
               children: [
@@ -233,33 +250,35 @@ class _GoLivePageState extends State<GoLivePage> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+            child: SafeArea(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                  ),
                 ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildControlButton(
-                    icon: state.isCameraOn
-                        ? Icons.videocam
-                        : Icons.videocam_off,
-                    onPressed: () => _broadcasterCubit.toggleCamera(),
-                  ),
-                  _buildControlButton(
-                    icon: state.isMicOn ? Icons.mic : Icons.mic_off,
-                    onPressed: () => _broadcasterCubit.toggleMic(),
-                  ),
-                  _buildControlButton(
-                    icon: Icons.flip_camera_ios,
-                    onPressed: () => _broadcasterCubit.switchCamera(),
-                  ),
-                ],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildControlButton(
+                      icon: state.isCameraOn
+                          ? Icons.videocam
+                          : Icons.videocam_off,
+                      onPressed: () => _broadcasterCubit.toggleCamera(),
+                    ),
+                    _buildControlButton(
+                      icon: state.isMicOn ? Icons.mic : Icons.mic_off,
+                      onPressed: () => _broadcasterCubit.toggleMic(),
+                    ),
+                    _buildControlButton(
+                      icon: Icons.flip_camera_ios,
+                      onPressed: () => _broadcasterCubit.switchCamera(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

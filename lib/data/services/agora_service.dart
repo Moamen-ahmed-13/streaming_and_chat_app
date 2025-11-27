@@ -4,13 +4,13 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:streaming_and_chat_app/core/logger.dart';
 
 class AgoraService {
-  late final RtcEngine _engine;
+  RtcEngine? _engine;
   bool _isInitialized = false;
 
   String get appId => dotenv.env['AGORA_APP_ID'] ?? '';
 
   Future<void> initialize() async {
-    if (_isInitialized) return;
+    if (_isInitialized && _engine != null) return;
 
     try {
       AppLogger.info('Initializing Agora Engine...');
@@ -20,7 +20,7 @@ class AgoraService {
 
       // Create engine
       _engine = createAgoraRtcEngine();
-      await _engine.initialize(RtcEngineContext(
+      await _engine!.initialize(RtcEngineContext(
         appId: appId,
         channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
       ));
@@ -35,19 +35,21 @@ class AgoraService {
 
   Future<void> startBroadcasting(String channelName) async {
     try {
-      if (!_isInitialized) await initialize();
+      if (!_isInitialized || _engine == null) {
+        await initialize();
+      }
 
       AppLogger.info('Starting broadcast on channel: $channelName');
 
       // Enable video
-      await _engine.enableVideo();
-      await _engine.startPreview();
+      await _engine!.enableVideo();
+      await _engine!.startPreview();
 
       // Set client role to broadcaster
-      await _engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+      await _engine!.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
 
       // Join channel
-      await _engine.joinChannel(
+      await _engine!.joinChannel(
         token: dotenv.env['AGORA_TEMP_TOKEN'] ?? '',
         channelId: channelName,
         uid: 0,
@@ -68,18 +70,20 @@ class AgoraService {
 
   Future<void> joinAsViewer(String channelName) async {
     try {
-      if (!_isInitialized) await initialize();
+      if (!_isInitialized || _engine == null) {
+        await initialize();
+      }
 
       AppLogger.info('Joining as viewer on channel: $channelName');
 
       // Enable video
-      await _engine.enableVideo();
+      await _engine!.enableVideo();
 
       // Set client role to audience
-      await _engine.setClientRole(role: ClientRoleType.clientRoleAudience);
+      await _engine!.setClientRole(role: ClientRoleType.clientRoleAudience);
 
       // Join channel
-      await _engine.joinChannel(
+      await _engine!.joinChannel(
         token: dotenv.env['AGORA_TEMP_TOKEN'] ?? '',
         channelId: channelName,
         uid: 0,
@@ -100,9 +104,11 @@ class AgoraService {
 
   Future<void> leaveChannel() async {
     try {
+      if (_engine == null) return;
+      
       AppLogger.info('Leaving channel...');
-      await _engine.leaveChannel();
-      await _engine.stopPreview();
+      await _engine!.leaveChannel();
+      await _engine!.stopPreview();
       AppLogger.info('Left channel successfully');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to leave channel', e, stackTrace);
@@ -112,7 +118,8 @@ class AgoraService {
 
   Future<void> switchCamera() async {
     try {
-      await _engine.switchCamera();
+      if (_engine == null) return;
+      await _engine!.switchCamera();
     } catch (e, stackTrace) {
       AppLogger.error('Failed to switch camera', e, stackTrace);
     }
@@ -120,7 +127,8 @@ class AgoraService {
 
   Future<void> muteLocalAudio(bool mute) async {
     try {
-      await _engine.muteLocalAudioStream(mute);
+      if (_engine == null) return;
+      await _engine!.muteLocalAudioStream(mute);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to mute audio', e, stackTrace);
     }
@@ -128,7 +136,8 @@ class AgoraService {
 
   Future<void> muteLocalVideo(bool mute) async {
     try {
-      await _engine.muteLocalVideoStream(mute);
+      if (_engine == null) return;
+      await _engine!.muteLocalVideoStream(mute);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to mute video', e, stackTrace);
     }
@@ -139,7 +148,12 @@ class AgoraService {
     required Function(RtcConnection connection, int remoteUid, UserOfflineReasonType reason) onUserOffline,
     required Function(RtcConnection connection, RtcStats stats) onRtcStats,
   }) {
-    _engine.registerEventHandler(
+    if (_engine == null) {
+      AppLogger.warning('Cannot register event handler - engine not initialized');
+      return;
+    }
+    
+    _engine!.registerEventHandler(
       RtcEngineEventHandler(
         onUserJoined: onUserJoined,
         onUserOffline: onUserOffline,
@@ -151,13 +165,16 @@ class AgoraService {
     );
   }
 
-  RtcEngine get engine => _engine;
+  RtcEngine? get engine => _engine;
 
   Future<void> dispose() async {
     try {
+      if (_engine == null) return;
+      
       AppLogger.info('Disposing Agora Engine...');
-      await _engine.leaveChannel();
-      await _engine.release();
+      await _engine!.leaveChannel();
+      await _engine!.release();
+      _engine = null;
       _isInitialized = false;
       AppLogger.info('Agora Engine disposed');
     } catch (e, stackTrace) {

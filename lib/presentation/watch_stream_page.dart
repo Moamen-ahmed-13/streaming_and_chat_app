@@ -95,6 +95,21 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
   }
 
   Widget _buildStreamView(BuildContext context, ViewerWatching state) {
+    final agoraEngine = getIt<AgoraService>().engine;
+    
+    if (agoraEngine == null) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Initializing stream...'),
+          ],
+        ),
+      );
+    }
+
     return BlocProvider(
       create: (_) => getIt<ChatCubit>(param1: state.stream.id)..loadMessages(),
       child: Stack(
@@ -104,7 +119,7 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
             child: state.remoteUid != 0
                 ? AgoraVideoView(
                     controller: VideoViewController.remote(
-                      rtcEngine: getIt<AgoraService>().engine,
+                      rtcEngine: agoraEngine,
                       canvas: VideoCanvas(uid: state.remoteUid),
                       connection: RtcConnection(
                         channelId: state.stream.channelName,
