@@ -1,15 +1,14 @@
-// features/profile/services/profile_service.dart
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:streaming_and_chat_app/core/logger.dart';
 import 'package:streaming_and_chat_app/data/models/user_model.dart';
+import 'package:streaming_and_chat_app/data/services/supabase_storage_service.dart';
 
 class ProfileService {
   final FirebaseFirestore _firestore;
-  final FirebaseStorage _storage;
+  final SupabaseStorageService _storageService;
 
-  ProfileService(this._firestore, this._storage);
+  ProfileService(this._firestore, this._storageService);
 
   Future<UserModel> getUserProfile(String userId) async {
     try {
@@ -35,7 +34,7 @@ class ProfileService {
       if (bio != null) updates['bio'] = bio;
 
       if (photoFile != null) {
-        final photoUrl = await _uploadProfilePhoto(userId, photoFile);
+        final photoUrl = await _storageService.uploadProfilePhoto(userId, photoFile);
         updates['photoUrl'] = photoUrl;
       }
 
@@ -43,17 +42,6 @@ class ProfileService {
       AppLogger.info('Profile updated for user: $userId');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to update profile', e, stackTrace);
-      rethrow;
-    }
-  }
-
-  Future<String> _uploadProfilePhoto(String userId, File file) async {
-    try {
-      final ref = _storage.ref().child('profile_photos/$userId.jpg');
-      await ref.putFile(file);
-      return await ref.getDownloadURL();
-    } catch (e, stackTrace) {
-      AppLogger.error('Failed to upload photo', e, stackTrace);
       rethrow;
     }
   }
