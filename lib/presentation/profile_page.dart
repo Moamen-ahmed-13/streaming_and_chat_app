@@ -15,9 +15,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final authState = context.read<AuthCubit>().state;
     if (authState is! AuthAuthenticated) {
-      return const Scaffold(
-        body: Center(child: Text('Not authenticated')),
-      );
+      return const Scaffold(body: Center(child: Text('Not authenticated')));
     }
 
     return BlocProvider(
@@ -34,6 +32,7 @@ class ProfilePage extends StatelessWidget {
               icon: const Icon(Icons.logout),
               onPressed: () {
                 context.read<AuthCubit>().logout();
+                context.go('/login');
               },
             ),
           ],
@@ -49,13 +48,19 @@ class ProfilePage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.red,
+                    ),
                     const SizedBox(height: 16),
                     Text(state.message),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        context.read<ProfileCubit>().loadProfile(authState.user.id);
+                        context.read<ProfileCubit>().loadProfile(
+                          authState.user.id,
+                        );
                       },
                       child: const Text('Retry'),
                     ),
@@ -65,15 +70,15 @@ class ProfilePage extends StatelessWidget {
             }
 
             if (state is ProfileLoaded || state is ProfileUpdateSuccess) {
-              final user = state is ProfileLoaded 
-                  ? state.user 
+              final user = state is ProfileLoaded
+                  ? state.user
                   : (state as ProfileUpdateSuccess).user;
 
               return SingleChildScrollView(
                 child: Column(
                   children: [
                     const SizedBox(height: 32),
-                    
+
                     // Profile Picture
                     CircleAvatar(
                       radius: 60,
@@ -102,10 +107,7 @@ class ProfilePage extends StatelessWidget {
                     // Email
                     Text(
                       user.email,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[400],
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.grey[400]),
                     ),
                     const SizedBox(height: 16),
 
@@ -178,19 +180,10 @@ class ProfilePage extends StatelessWidget {
       children: [
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[400],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 14, color: Colors.grey[400])),
       ],
     );
   }
