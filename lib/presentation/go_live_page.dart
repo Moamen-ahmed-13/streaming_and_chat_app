@@ -77,7 +77,11 @@ class _GoLivePageState extends State<GoLivePage> {
 
     if (confirm == true && mounted) {
       await _broadcasterCubit.endStream();
-      if (mounted) context.pop();
+      if (mounted && context.canPop()) {
+        context.pop();
+      } else if (mounted) {
+        context.go('/home');
+      }
     }
   }
 
@@ -95,7 +99,12 @@ class _GoLivePageState extends State<GoLivePage> {
               ),
             );
           } else if (state is BroadcasterEnded) {
-            context.pop();
+            // Navigate back safely
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
           }
         },
         child: Scaffold(
@@ -162,7 +171,7 @@ class _GoLivePageState extends State<GoLivePage> {
 
   Widget _buildLiveView(BuildContext context, BroadcasterLive state) {
     final agoraEngine = getIt<AgoraService>().engine;
-    
+
     if (agoraEngine == null) {
       return const Center(
         child: Column(
@@ -191,58 +200,59 @@ class _GoLivePageState extends State<GoLivePage> {
           ),
 
           // Top bar and chat
-          SafeArea(
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text(
-                          'LIVE',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+          Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
                       ),
-                      const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black54,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.visibility, size: 16),
-                            const SizedBox(width: 4),
-                            Text('${state.viewerCount}'),
-                          ],
-                        ),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => _endStream(context),
+                      child: const Text(
+                        'LIVE',
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.visibility, size: 16),
+                          const SizedBox(width: 4),
+                          Text('${state.viewerCount}'),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => _endStream(context),
+                    ),
+                  ],
                 ),
-                const Spacer(),
-                // Chat overlay
-                const ChatWidget(),
-              ],
-            ),
+              ),
+              const Spacer(),
+              // Chat overlay
+              Container(
+                padding: const EdgeInsets.only(bottom: 65),
+                child: ChatWidget(),
+              ),
+            ],
           ),
 
           // Bottom controls

@@ -241,7 +241,9 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
                 ),
                 const Spacer(),
                 // Chat overlay
-                const ChatWidget(),
+                SizedBox(
+                  height: 300,
+                  child: const ChatWidget()),
               ],
             ),
           ),
