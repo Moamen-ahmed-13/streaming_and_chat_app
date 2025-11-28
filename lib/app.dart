@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:streaming_and_chat_app/core/app_router.dart';
 import 'package:streaming_and_chat_app/core/injection.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_cubit.dart';
+import 'package:streaming_and_chat_app/logic/auth_cubit/auth_state.dart';
+import 'package:streaming_and_chat_app/presentation/home_page.dart';
+import 'package:streaming_and_chat_app/presentation/login_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<AuthCubit>()..checkAuthStatus(),
-      child: MaterialApp.router(
+      child: MaterialApp(
         title: 'LiveStream App',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -23,7 +25,14 @@ class MyApp extends StatelessWidget {
             elevation: 0,
           ),
         ),
-        routerConfig: AppRouter.router,
+        home: BlocBuilder<AuthCubit, AuthState>(
+          builder: (context, state) {
+            if (state is AuthAuthenticated) {
+              return const HomePage();
+            }
+            return const LoginPage();
+          },
+        ),
       ),
     );
   }

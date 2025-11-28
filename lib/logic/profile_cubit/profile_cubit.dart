@@ -43,11 +43,9 @@ class ProfileCubit extends Cubit<ProfileState> {
         photoFile: photoFile,
       );
       
-      // Reload profile to get updated data
       final updatedUser = await _profileService.getUserProfile(userId);
       emit(ProfileUpdateSuccess(updatedUser));
       
-      // After a brief moment, change to loaded state
       await Future.delayed(const Duration(milliseconds: 500));
       emit(ProfileLoaded(updatedUser));
       
@@ -56,7 +54,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       AppLogger.error('Failed to update profile', e, stackTrace);
       emit(ProfileError('Failed to update profile: ${e.toString()}'));
       
-      // Reload the current profile after error
       if (state is ProfileUpdating) {
         emit(ProfileLoaded((state as ProfileUpdating).currentUser));
       }
@@ -68,7 +65,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       AppLogger.info('Following user: $targetUserId');
       await _profileService.followUser(currentUserId, targetUserId);
       
-      // Reload profile to update followers list
       await loadProfile(currentUserId);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to follow user', e, stackTrace);
@@ -81,7 +77,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       AppLogger.info('Unfollowing user: $targetUserId');
       await _profileService.unfollowUser(currentUserId, targetUserId);
       
-      // Reload profile to update followers list
       await loadProfile(currentUserId);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to unfollow user', e, stackTrace);

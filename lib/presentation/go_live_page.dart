@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:streaming_and_chat_app/core/chat_widget.dart';
 import 'package:streaming_and_chat_app/core/injection.dart';
@@ -77,10 +76,8 @@ class _GoLivePageState extends State<GoLivePage> {
 
     if (confirm == true && mounted) {
       await _broadcasterCubit.endStream();
-      if (mounted && context.canPop()) {
-        context.pop();
-      } else if (mounted) {
-        context.go('/home');
+      if (mounted) {
+        Navigator.pop(context);
       }
     }
   }
@@ -99,12 +96,7 @@ class _GoLivePageState extends State<GoLivePage> {
               ),
             );
           } else if (state is BroadcasterEnded) {
-            // Navigate back safely
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.go('/home');
-            }
+            Navigator.pop(context);
           }
         },
         child: Scaffold(
@@ -189,7 +181,6 @@ class _GoLivePageState extends State<GoLivePage> {
       create: (_) => getIt<ChatCubit>(param1: state.stream.id)..loadMessages(),
       child: Stack(
         children: [
-          // Camera preview
           Center(
             child: AgoraVideoView(
               controller: VideoViewController(
@@ -199,7 +190,6 @@ class _GoLivePageState extends State<GoLivePage> {
             ),
           ),
 
-          // Top bar and chat
           Column(
             children: [
               Container(
@@ -247,15 +237,13 @@ class _GoLivePageState extends State<GoLivePage> {
                 ),
               ),
               const Spacer(),
-              // Chat overlay
               Container(
                 padding: const EdgeInsets.only(bottom: 65),
-                child: ChatWidget(),
+                child: const ChatWidget(),
               ),
             ],
           ),
 
-          // Bottom controls
           Positioned(
             bottom: 0,
             left: 0,
@@ -302,7 +290,7 @@ class _GoLivePageState extends State<GoLivePage> {
     required VoidCallback onPressed,
   }) {
     return Container(
-      decoration: BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+      decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
       child: IconButton(icon: Icon(icon), onPressed: onPressed, iconSize: 28),
     );
   }

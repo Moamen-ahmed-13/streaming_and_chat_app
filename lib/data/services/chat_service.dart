@@ -6,7 +6,6 @@ class ChatService {
 
   ChatService(this._firestore);
 
-  // Send message
   Future<void> sendMessage({
     required String streamId,
     required String userId,
@@ -37,7 +36,6 @@ class ChatService {
     }
   }
 
-  // Get messages stream
   Stream<List<MessageModel>> getMessagesStream(String streamId) {
     try {
       AppLogger.info('Subscribing to messages for stream: $streamId');
@@ -60,7 +58,6 @@ class ChatService {
     }
   }
 
-  // Delete all messages for a stream (when stream ends)
   Future<void> deleteStreamMessages(String streamId) async {
     try {
       AppLogger.info('Deleting messages for stream: $streamId');
@@ -79,7 +76,6 @@ class ChatService {
       AppLogger.info('Messages deleted successfully');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to delete messages', e, stackTrace);
-      // Don't rethrow - it's okay if cleanup fails
     }
   }
 }

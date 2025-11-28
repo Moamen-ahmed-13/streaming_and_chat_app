@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_cubit.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_state.dart';
 
@@ -35,7 +34,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: _isLoading ? null : () => context.pop(),
+          onPressed: _isLoading ? null : () => Navigator.pop(context),
         ),
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
@@ -59,7 +58,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
             );
             Future.delayed(const Duration(seconds: 2), () {
-              if (mounted) context.pop();
+              if (mounted) Navigator.pop(context);
             });
           }
         },
@@ -97,7 +96,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                       const SizedBox(height: 48),
 
-                      // Email field
                       TextFormField(
                         controller: _emailController,
                         enabled: !_isLoading && !isAuthLoading,
@@ -120,7 +118,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Send reset email button
                       ElevatedButton(
                         onPressed: (_isLoading || isAuthLoading) ? null : _sendResetEmail,
                         style: ElevatedButton.styleFrom(
@@ -145,11 +142,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Back to login
                       TextButton(
                         onPressed: (_isLoading || isAuthLoading)
                             ? null
-                            : () => context.pop(),
+                            : () => Navigator.pop(context),
                         child: const Text('Back to Login'),
                       ),
                     ],

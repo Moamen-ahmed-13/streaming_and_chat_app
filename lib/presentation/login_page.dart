@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_cubit.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_state.dart';
+import 'package:streaming_and_chat_app/presentation/register_page.dart';
+import 'package:streaming_and_chat_app/presentation/forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -32,14 +33,12 @@ class _LoginPageState extends State<LoginPage> {
         _emailController.text.trim(),
         _passwordController.text,
       );
-      context.go('/home');
     }
   }
 
   void _googleSignIn() {
     setState(() => _isLoading = true);
     context.read<AuthCubit>().signInWithGoogle();
-    context.go('/home');
   }
 
   @override
@@ -58,7 +57,6 @@ class _LoginPageState extends State<LoginPage> {
             );
           } else if (state is AuthAuthenticated) {
             setState(() => _isLoading = false);
-            // Navigation handled by router
           } else if (state is AuthUnauthenticated) {
             setState(() => _isLoading = false);
           }
@@ -76,7 +74,6 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Logo/Title
                       Icon(
                         Icons.play_circle_filled,
                         size: 80,
@@ -97,7 +94,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 48),
 
-                      // Email field
                       TextFormField(
                         controller: _emailController,
                         enabled: !_isLoading && !isAuthLoading,
@@ -119,7 +115,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Password field
                       TextFormField(
                         controller: _passwordController,
                         enabled: !_isLoading && !isAuthLoading,
@@ -157,19 +152,24 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 8),
 
-                      // Forgot password
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: (_isLoading || isAuthLoading)
                               ? null
-                              : () => context.push('/forgot-password'),
+                              : () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const ForgotPasswordPage(),
+                                    ),
+                                  );
+                                },
                           child: const Text('Forgot Password?'),
                         ),
                       ),
                       const SizedBox(height: 24),
 
-                      // Login button
                       ElevatedButton(
                         onPressed: (_isLoading || isAuthLoading)
                             ? null
@@ -196,7 +196,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Divider
                       Row(
                         children: [
                           Expanded(child: Divider(color: Colors.grey[700])),
@@ -212,7 +211,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Google Sign-In button
                       OutlinedButton.icon(
                         onPressed: (_isLoading || isAuthLoading)
                             ? null
@@ -242,7 +240,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Register link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -250,7 +247,14 @@ class _LoginPageState extends State<LoginPage> {
                           TextButton(
                             onPressed: (_isLoading || isAuthLoading)
                                 ? null
-                                : () => context.push('/register'),
+                                : () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const RegisterPage(),
+                                      ),
+                                    );
+                                  },
                             child: const Text('Register'),
                           ),
                         ],

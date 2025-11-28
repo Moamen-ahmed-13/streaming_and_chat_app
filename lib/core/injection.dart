@@ -21,23 +21,19 @@ import 'package:streaming_and_chat_app/logic/viewer_cubit/viewer_cubit.dart';
 final getIt = GetIt.instance;
 
 Future<void> configureDependencies() async {
-  // Firebase instances
   getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
   getIt.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
   getIt.registerLazySingleton<FirebaseMessaging>(() => FirebaseMessaging.instance);
   getIt.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn());
   
-  // Supabase instance (replaces Firebase Storage)
   getIt.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
   
-  // Services
   getIt.registerLazySingleton<AuthService>(() => AuthService(
     getIt<FirebaseAuth>(),
     getIt<FirebaseFirestore>(),
     getIt<GoogleSignIn>(),
   ));
   
-  // Supabase Storage Service
   getIt.registerLazySingleton<SupabaseStorageService>(() => SupabaseStorageService(
     getIt<SupabaseClient>(),
   ));
@@ -62,7 +58,6 @@ Future<void> configureDependencies() async {
     getIt<FirebaseFirestore>(),
   ));
   
-  // Cubits - Factory because they need to be recreated
   getIt.registerFactory<AuthCubit>(() => AuthCubit(getIt<AuthService>()));
   
   getIt.registerFactory<ProfileCubit>(() => ProfileCubit(getIt<ProfileService>()));

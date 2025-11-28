@@ -11,13 +11,10 @@ class AuthService {
 
   AuthService(this._auth, this._firestore, this._googleSignIn);
 
-  // Get current user
   User? get currentUser => _auth.currentUser;
   
-  // Auth state stream
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // Register with email and password
   Future<UserModel> registerWithEmail(
     String email, 
     String password, 
@@ -51,7 +48,6 @@ class AuthService {
     }
   }
 
-  // Login with email and password
   Future<UserModel> loginWithEmail(String email, String password) async {
     try {
       AppLogger.info('Logging in user: $email');
@@ -76,7 +72,6 @@ class AuthService {
     }
   }
 
-  // Sign in with Google
  Future<UserModel> signInWithGoogle() async {
   try {
     AppLogger.info('Signing in with Google');
@@ -122,7 +117,6 @@ class AuthService {
   }
 }
 
-  // Send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       AppLogger.info('Sending password reset email to: $email');
@@ -134,7 +128,6 @@ class AuthService {
     }
   }
 
-  // Logout
   Future<void> logout() async {
     try {
       AppLogger.info('Logging out user');
@@ -147,7 +140,6 @@ class AuthService {
     }
   }
 
-  // Get user data
   Future<UserModel> getUserData(String userId) async {
     try {
       final doc = await _firestore.collection('users').doc(userId).get();
@@ -161,7 +153,6 @@ class AuthService {
     }
   }
 
-  // Handle auth exceptions
   String _handleAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':

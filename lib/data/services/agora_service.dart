@@ -15,10 +15,8 @@ class AgoraService {
     try {
       AppLogger.info('Initializing Agora Engine...');
       
-      // Request permissions
       await [Permission.camera, Permission.microphone].request();
 
-      // Create engine
       _engine = createAgoraRtcEngine();
       await _engine!.initialize(RtcEngineContext(
         appId: appId,
@@ -41,14 +39,11 @@ class AgoraService {
 
       AppLogger.info('Starting broadcast on channel: $channelName');
 
-      // Enable video
       await _engine!.enableVideo();
       await _engine!.startPreview();
 
-      // Set client role to broadcaster
       await _engine!.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
 
-      // Join channel
       await _engine!.joinChannel(
         token: dotenv.env['AGORA_TEMP_TOKEN'] ?? '',
         channelId: channelName,
@@ -76,13 +71,10 @@ class AgoraService {
 
       AppLogger.info('Joining as viewer on channel: $channelName');
 
-      // Enable video
       await _engine!.enableVideo();
 
-      // Set client role to audience
       await _engine!.setClientRole(role: ClientRoleType.clientRoleAudience);
 
-      // Join channel
       await _engine!.joinChannel(
         token: dotenv.env['AGORA_TEMP_TOKEN'] ?? '',
         channelId: channelName,

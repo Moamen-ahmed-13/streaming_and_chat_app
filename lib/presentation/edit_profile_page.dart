@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:streaming_and_chat_app/core/injection.dart';
@@ -87,7 +86,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         title: const Text('Edit Profile'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: BlocProvider(
@@ -101,9 +100,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   backgroundColor: Colors.green,
                 ),
               );
-              // Update the auth state with new user data
               context.read<AuthCubit>().checkAuthStatus();
-              context.pop();
+              Navigator.pop(context);
             } else if (state is ProfileError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -122,7 +120,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    // Profile Picture
                     GestureDetector(
                       onTap: _pickImage,
                       child: Stack(
@@ -163,7 +160,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     const SizedBox(height: 32),
 
-                    // Display Name
                     TextFormField(
                       controller: _nameController,
                       decoration: const InputDecoration(
@@ -183,7 +179,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Bio
                     TextFormField(
                       controller: _bioController,
                       decoration: const InputDecoration(
@@ -197,7 +192,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     const SizedBox(height: 32),
 
-                    // Save Button
                     ElevatedButton(
                       onPressed: isUpdating 
                           ? null 

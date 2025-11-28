@@ -1,4 +1,3 @@
-// Home Cubit
 import 'package:equatable/equatable.dart';
 import 'package:streaming_and_chat_app/data/models/stream_model.dart';
 abstract class HomeState extends Equatable {

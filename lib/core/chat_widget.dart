@@ -36,7 +36,6 @@ class _ChatWidgetState extends State<ChatWidget> {
       );
       _messageController.clear();
 
-      // Scroll to bottom after sending
       Future.delayed(const Duration(milliseconds: 100), () {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
@@ -65,7 +64,6 @@ class _ChatWidgetState extends State<ChatWidget> {
       ),
       child: Column(
         children: [
-          // Messages list
           Expanded(
             child: BlocBuilder<ChatCubit, ChatState>(
               builder: (context, state) {
@@ -94,7 +92,6 @@ class _ChatWidgetState extends State<ChatWidget> {
                     );
                   }
 
-                  // Auto-scroll to bottom when new messages arrive
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (_scrollController.hasClients) {
                       _scrollController.animateTo(
@@ -120,7 +117,6 @@ class _ChatWidgetState extends State<ChatWidget> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // User avatar
                             CircleAvatar(
                               radius: 12,
                               backgroundColor: Colors.purple,
@@ -130,7 +126,6 @@ class _ChatWidgetState extends State<ChatWidget> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            // Message content
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
@@ -177,7 +172,6 @@ class _ChatWidgetState extends State<ChatWidget> {
             ),
           ),
 
-          // Message input
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(

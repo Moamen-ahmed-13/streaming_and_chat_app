@@ -1,4 +1,3 @@
-// features/home/services/stream_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:streaming_and_chat_app/core/logger.dart';
 import 'package:streaming_and_chat_app/data/models/stream_model.dart';
@@ -8,7 +7,6 @@ class StreamService {
 
   StreamService(this._firestore);
 
-  // Create a new stream
   Future<void> createStream(StreamModel stream) async {
     try {
       await _firestore.collection('streams').doc(stream.id).set(stream.toJson());
@@ -19,7 +17,6 @@ class StreamService {
     }
   }
 
-  // Get all live streams
   Stream<List<StreamModel>> getLiveStreams() {
     return _firestore
         .collection('streams')
@@ -31,7 +28,6 @@ class StreamService {
             .toList());
   }
 
-  // Update viewer count
   Future<void> updateViewerCount(String streamId, int count) async {
     try {
       await _firestore.collection('streams').doc(streamId).update({
@@ -42,7 +38,6 @@ class StreamService {
     }
   }
 
-  // End stream
   Future<void> endStream(String streamId) async {
     try {
       await _firestore.collection('streams').doc(streamId).update({

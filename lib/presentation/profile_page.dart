@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:streaming_and_chat_app/core/injection.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_cubit.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_state.dart';
 import 'package:streaming_and_chat_app/logic/profile_cubit/profile_cubit.dart';
 import 'package:streaming_and_chat_app/logic/profile_cubit/profile_state.dart';
+import 'package:streaming_and_chat_app/presentation/edit_profile_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -25,14 +25,13 @@ class ProfilePage extends StatelessWidget {
           title: const Text('Profile'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/home'),
+            onPressed: () => Navigator.pop(context),
           ),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () {
                 context.read<AuthCubit>().logout();
-                context.go('/login');
               },
             ),
           ],
@@ -79,7 +78,6 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     const SizedBox(height: 32),
 
-                    // Profile Picture
                     CircleAvatar(
                       radius: 60,
                       backgroundImage: user.photoUrl != null
@@ -94,7 +92,6 @@ class ProfilePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Display Name
                     Text(
                       user.displayName,
                       style: const TextStyle(
@@ -104,14 +101,12 @@ class ProfilePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
 
-                    // Email
                     Text(
                       user.email,
                       style: TextStyle(fontSize: 16, color: Colors.grey[400]),
                     ),
                     const SizedBox(height: 16),
 
-                    // Bio
                     if (user.bio != null && user.bio!.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -126,7 +121,6 @@ class ProfilePage extends StatelessWidget {
                       ),
                     const SizedBox(height: 32),
 
-                    // Stats
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -147,11 +141,17 @@ class ProfilePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
-                    // Edit Profile Button
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 32),
                       child: ElevatedButton.icon(
-                        onPressed: () => context.push('/edit-profile'),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const EditProfilePage(),
+                            ),
+                          );
+                        },
                         icon: const Icon(Icons.edit),
                         label: const Text('Edit Profile'),
                         style: ElevatedButton.styleFrom(

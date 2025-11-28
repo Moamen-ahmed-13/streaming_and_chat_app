@@ -26,13 +26,10 @@ class BroadcasterCubit extends Cubit<BroadcasterState> {
       emit(BroadcasterLoading());
       AppLogger.info('Starting stream: $title');
 
-      // Initialize Agora first
       await _agoraService.initialize();
 
-      // Generate unique channel name
       final channelName = 'stream_${const Uuid().v4().substring(0, 8)}';
 
-      // Create stream model
       final stream = StreamModel(
         id: channelName,
         streamerId: streamerId,
@@ -45,10 +42,8 @@ class BroadcasterCubit extends Cubit<BroadcasterState> {
         startedAt: DateTime.now(),
       );
 
-      // Save stream to Firestore
       await _streamService.createStream(stream);
       
-      // Setup Agora event handlers AFTER initialization
       _agoraService.registerEventHandler(
         onUserJoined: (connection, remoteUid, elapsed) {
           _viewerCount++;
@@ -60,11 +55,9 @@ class BroadcasterCubit extends Cubit<BroadcasterState> {
           _updateViewerCount();
         },
         onRtcStats: (connection, stats) {
-          // Handle stats if needed
         },
       );
 
-      // Start Agora broadcast
       await _agoraService.startBroadcasting(channelName);
 
       _currentStream = stream;
@@ -120,10 +113,8 @@ class BroadcasterCubit extends Cubit<BroadcasterState> {
       AppLogger.info('Ending stream...');
 
       if (_currentStream != null) {
-        // End Agora session
         await _agoraService.leaveChannel();
 
-        // Update stream in Firestore
         await _streamService.endStream(_currentStream!.id);
 
         _currentStream = null;

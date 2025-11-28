@@ -49,14 +49,12 @@ class ProfileService {
   Future<void> followUser(String currentUserId, String targetUserId) async {
     try {
       await _firestore.runTransaction((transaction) async {
-        // Add to current user's following
         transaction.update(
           _firestore.collection('users').doc(currentUserId),
           {
             'following': FieldValue.arrayUnion([targetUserId])
           },
         );
-        // Add to target user's followers
         transaction.update(
           _firestore.collection('users').doc(targetUserId),
           {

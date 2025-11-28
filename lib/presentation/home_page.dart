@@ -1,11 +1,13 @@
-// features/home/presentation/pages/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:streaming_and_chat_app/core/injection.dart';
 import 'package:streaming_and_chat_app/logic/home_cubit/home_cubit.dart';
 import 'package:streaming_and_chat_app/logic/home_cubit/home_state.dart';
+import 'package:streaming_and_chat_app/presentation/profile_page.dart';
+import 'package:streaming_and_chat_app/presentation/go_live_page.dart';
+import 'package:streaming_and_chat_app/presentation/watch_stream_page.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -19,7 +21,12 @@ class HomePage extends StatelessWidget {
           actions: [
             IconButton(
               icon: const Icon(Icons.person),
-              onPressed: () => context.push('/profile'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfilePage()),
+                );
+              },
             ),
           ],
         ),
@@ -47,7 +54,12 @@ class HomePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 32),
                       ElevatedButton.icon(
-                        onPressed: () => context.push('/go-live'),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const GoLivePage()),
+                          );
+                        },
                         icon: const Icon(Icons.videocam),
                         label: const Text('Start Your Stream'),
                         style: ElevatedButton.styleFrom(
@@ -74,11 +86,17 @@ class HomePage extends StatelessWidget {
                     return Card(
                       margin: const EdgeInsets.only(bottom: 16),
                       child: InkWell(
-                        onTap: () => context.push('/watch-stream', extra: stream),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => WatchStreamPage(stream: stream),
+                            ),
+                          );
+                        },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Thumbnail
                             AspectRatio(
                               aspectRatio: 16 / 9,
                               child: Container(
@@ -144,7 +162,6 @@ class HomePage extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // Stream info
                             Padding(
                               padding: const EdgeInsets.all(12),
                               child: Row(
@@ -198,7 +215,12 @@ class HomePage extends StatelessWidget {
           },
         ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => context.push('/go-live'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const GoLivePage()),
+            );
+          },
           icon: const Icon(Icons.videocam),
           label: const Text('Go Live'),
         ),
@@ -206,4 +228,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-

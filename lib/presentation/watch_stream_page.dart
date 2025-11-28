@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:streaming_and_chat_app/core/chat_widget.dart';
 import 'package:streaming_and_chat_app/core/injection.dart';
@@ -51,10 +50,10 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
               ),
             );
             Future.delayed(const Duration(seconds: 2), () {
-              if (mounted) context.pop();
+              if (mounted) Navigator.pop(context);
             });
           } else if (state is ViewerLeft) {
-            context.pop();
+            Navigator.pop(context);
           }
         },
         child: Scaffold(
@@ -78,7 +77,7 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
                       Text(state.message),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: () => context.pop(),
+                        onPressed: () => Navigator.pop(context),
                         child: const Text('Go Back'),
                       ),
                     ],
@@ -114,7 +113,6 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
       create: (_) => getIt<ChatCubit>(param1: state.stream.id)..loadMessages(),
       child: Stack(
         children: [
-          // Video player
           Center(
             child: state.remoteUid != 0
                 ? AgoraVideoView(
@@ -141,7 +139,6 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
                   ),
           ),
 
-          // Top bar
           SafeArea(
             child: Column(
               children: [
@@ -240,10 +237,10 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
                   ),
                 ),
                 const Spacer(),
-                // Chat overlay
-                SizedBox(
+                const SizedBox(
                   height: 300,
-                  child: const ChatWidget()),
+                  child: ChatWidget(),
+                ),
               ],
             ),
           ),

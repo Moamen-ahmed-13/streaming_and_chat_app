@@ -19,7 +19,6 @@ class ViewerCubit extends Cubit<ViewerState> {
       emit(ViewerLoading());
       AppLogger.info('Joining stream: ${stream.id}');
 
-      // Setup Agora event handlers
       _agoraService.registerEventHandler(
         onUserJoined: (connection, remoteUid, elapsed) {
           AppLogger.info('Remote user joined: $remoteUid');
@@ -48,10 +47,8 @@ class ViewerCubit extends Cubit<ViewerState> {
         },
       );
 
-      // Join Agora channel as viewer
       await _agoraService.joinAsViewer(stream.channelName);
 
-      // Listen to stream updates
       _streamService.getLiveStreams().listen((streams) {
         final currentStream = streams.firstWhere(
           (s) => s.id == stream.id,

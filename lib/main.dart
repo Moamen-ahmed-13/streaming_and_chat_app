@@ -13,17 +13,14 @@ void main() async {
   AppLogger.info('Starting application...');
   
   try {
-    // Load environment variables
     await dotenv.load(fileName: ".env");
     AppLogger.info('Environment variables loaded');
     
-    // Initialize Firebase
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     AppLogger.info('Firebase initialized');
     
-    // Initialize Supabase
     await Supabase.initialize(
       url: dotenv.env['SUPABASE_URL'] ?? '',
       anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
@@ -36,7 +33,6 @@ void main() async {
     );
     AppLogger.info('Supabase initialized');
     
-    // Configure dependencies
     await configureDependencies();
     AppLogger.info('Dependencies configured');
     

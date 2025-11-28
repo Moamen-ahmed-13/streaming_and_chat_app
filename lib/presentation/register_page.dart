@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_cubit.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_state.dart';
 
@@ -38,7 +37,6 @@ class _RegisterPageState extends State<RegisterPage> {
         _passwordController.text,
         _nameController.text.trim(),
       );
-      context.go('/home');
     }
   }
 
@@ -48,7 +46,7 @@ class _RegisterPageState extends State<RegisterPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: _isLoading ? null : () => context.pop(),
+          onPressed: _isLoading ? null : () => Navigator.pop(context),
         ),
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
@@ -64,7 +62,6 @@ class _RegisterPageState extends State<RegisterPage> {
             );
           } else if (state is AuthAuthenticated) {
             setState(() => _isLoading = false);
-            // Navigation handled by router
           } else if (state is AuthUnauthenticated) {
             setState(() => _isLoading = false);
           }
@@ -97,7 +94,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 48),
 
-                      // Display name field
                       TextFormField(
                         controller: _nameController,
                         enabled: !_isLoading && !isAuthLoading,
@@ -118,7 +114,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Email field
                       TextFormField(
                         controller: _emailController,
                         enabled: !_isLoading && !isAuthLoading,
@@ -140,7 +135,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Password field
                       TextFormField(
                         controller: _passwordController,
                         enabled: !_isLoading && !isAuthLoading,
@@ -176,7 +170,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Confirm password field
                       TextFormField(
                         controller: _confirmPasswordController,
                         enabled: !_isLoading && !isAuthLoading,
@@ -213,7 +206,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Register button
                       ElevatedButton(
                         onPressed: (_isLoading || isAuthLoading) ? null : _register,
                         style: ElevatedButton.styleFrom(
@@ -238,7 +230,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Login link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -246,7 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           TextButton(
                             onPressed: (_isLoading || isAuthLoading)
                                 ? null
-                                : () => context.pop(),
+                                : () => Navigator.pop(context),
                             child: const Text('Login'),
                           ),
                         ],
