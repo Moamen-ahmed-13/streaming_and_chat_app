@@ -81,17 +81,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+    return BlocProvider(
+      create: (_) => getIt<ProfileCubit>(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit Profile'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
-      ),
-      body: BlocProvider(
-        create: (_) => getIt<ProfileCubit>(),
-        child: BlocConsumer<ProfileCubit, ProfileState>(
+        body: BlocConsumer<ProfileCubit, ProfileState>(
           listener: (context, state) {
             if (state is ProfileUpdateSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -100,6 +100,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   backgroundColor: Colors.green,
                 ),
               );
+              // Update the auth state with new user data
               context.read<AuthCubit>().checkAuthStatus();
               Navigator.pop(context);
             } else if (state is ProfileError) {
@@ -120,6 +121,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    // Profile Picture
                     GestureDetector(
                       onTap: _pickImage,
                       child: Stack(
@@ -160,6 +162,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     const SizedBox(height: 32),
 
+                    // Display Name
                     TextFormField(
                       controller: _nameController,
                       decoration: const InputDecoration(
@@ -179,6 +182,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     const SizedBox(height: 16),
 
+                    // Bio
                     TextFormField(
                       controller: _bioController,
                       decoration: const InputDecoration(
@@ -192,6 +196,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     const SizedBox(height: 32),
 
+                    // Save Button
                     ElevatedButton(
                       onPressed: isUpdating 
                           ? null 
