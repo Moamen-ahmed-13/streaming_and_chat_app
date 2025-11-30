@@ -138,7 +138,7 @@ class _GoLivePageState extends State<GoLivePage> {
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 20),
             TextField(
               controller: _titleController,
               decoration: const InputDecoration(
@@ -148,7 +148,7 @@ class _GoLivePageState extends State<GoLivePage> {
               ),
               maxLength: 50,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () => _startStream(context),
               icon: const Icon(Icons.play_arrow),
