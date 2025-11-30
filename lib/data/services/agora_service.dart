@@ -10,7 +10,10 @@ class AgoraService {
   String get appId => dotenv.env['AGORA_APP_ID'] ?? '';
 
   Future<void> initialize() async {
-    if (_isInitialized && _engine != null) return;
+    if (_isInitialized && _engine != null) {
+      AppLogger.info('Agora Engine already initialized');
+      return;
+    }
 
     try {
       AppLogger.info('Initializing Agora Engine...');
@@ -27,6 +30,8 @@ class AgoraService {
       AppLogger.info('Agora Engine initialized successfully');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to initialize Agora', e, stackTrace);
+      _isInitialized = false;
+      _engine = null;
       rethrow;
     }
   }
@@ -40,6 +45,9 @@ class AgoraService {
       AppLogger.info('Starting broadcast on channel: $channelName');
 
       await _engine!.enableVideo();
+      
+      await _engine!.enableLocalVideo(true);
+      
       await _engine!.startPreview();
 
       await _engine!.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
@@ -53,6 +61,8 @@ class AgoraService {
           clientRoleType: ClientRoleType.clientRoleBroadcaster,
           publishCameraTrack: true,
           publishMicrophoneTrack: true,
+          autoSubscribeVideo: true,
+          autoSubscribeAudio: true,
         ),
       );
 
@@ -84,6 +94,8 @@ class AgoraService {
           clientRoleType: ClientRoleType.clientRoleAudience,
           autoSubscribeVideo: true,
           autoSubscribeAudio: true,
+          publishCameraTrack: false,
+          publishMicrophoneTrack: false,
         ),
       );
 
@@ -140,24 +152,43 @@ class AgoraService {
     required Function(RtcConnection connection, int remoteUid, UserOfflineReasonType reason) onUserOffline,
     required Function(RtcConnection connection, RtcStats stats) onRtcStats,
   }) {
-    if (_engine == null) {
+    if (!_isInitialized || _engine == null) {
       AppLogger.warning('Cannot register event handler - engine not initialized');
       return;
     }
     
     _engine!.registerEventHandler(
       RtcEngineEventHandler(
-        onUserJoined: onUserJoined,
-        onUserOffline: onUserOffline,
+        onJoinChannelSuccess: (connection, elapsed) {
+          AppLogger.info('Join channel success: ${connection.channelId}, localUid: ${connection.localUid}');
+        },
+        onUserJoined: (connection, remoteUid, elapsed) {
+          AppLogger.info('User joined - Channel: ${connection.channelId}, RemoteUID: $remoteUid');
+          onUserJoined(connection, remoteUid, elapsed);
+        },
+        onUserOffline: (connection, remoteUid, reason) {
+          AppLogger.info('User offline - RemoteUID: $remoteUid, Reason: $reason');
+          onUserOffline(connection, remoteUid, reason);
+        },
         onRtcStats: onRtcStats,
+        onRemoteVideoStateChanged: (connection, remoteUid, state, reason, elapsed) {
+          AppLogger.info('Remote video state changed - UID: $remoteUid, State: $state, Reason: $reason');
+        },
+        onFirstRemoteVideoFrame: (connection, remoteUid, width, height, elapsed) {
+          AppLogger.info('First remote video frame - UID: $remoteUid, Size: ${width}x$height');
+        },
         onError: (err, msg) {
           AppLogger.error('Agora error: $msg', err);
+        },
+        onConnectionStateChanged: (connection, state, reason) {
+          AppLogger.info('Connection state changed - State: $state, Reason: $reason');
         },
       ),
     );
   }
 
   RtcEngine? get engine => _engine;
+  bool get isInitialized => _isInitialized;
 
   Future<void> dispose() async {
     try {

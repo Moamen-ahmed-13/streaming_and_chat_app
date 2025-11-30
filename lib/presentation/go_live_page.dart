@@ -9,6 +9,7 @@ import 'package:streaming_and_chat_app/logic/auth_cubit/auth_state.dart';
 import 'package:streaming_and_chat_app/logic/chat_cubit/chat_cubit.dart';
 import 'package:streaming_and_chat_app/logic/streaming_cubit/broadcast_cubit.dart';
 import 'package:streaming_and_chat_app/logic/streaming_cubit/broadcast_state.dart';
+import 'package:streaming_and_chat_app/presentation/home_page.dart';
 
 class GoLivePage extends StatefulWidget {
   const GoLivePage({super.key});
@@ -77,7 +78,10 @@ class _GoLivePageState extends State<GoLivePage> {
     if (confirm == true && mounted) {
       await _broadcasterCubit.endStream();
       if (mounted) {
-        Navigator.pop(context);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
       }
     }
   }
@@ -181,11 +185,14 @@ class _GoLivePageState extends State<GoLivePage> {
       create: (_) => getIt<ChatCubit>(param1: state.stream.id)..loadMessages(),
       child: Stack(
         children: [
-          Center(
-            child: AgoraVideoView(
-              controller: VideoViewController(
-                rtcEngine: agoraEngine,
-                canvas: const VideoCanvas(uid: 0),
+          Container(
+            color: Colors.black,
+            child: Center(
+              child: AgoraVideoView(
+                controller: VideoViewController(
+                  rtcEngine: agoraEngine,
+                  canvas: const VideoCanvas(uid: 0),
+                ),
               ),
             ),
           ),
@@ -290,7 +297,10 @@ class _GoLivePageState extends State<GoLivePage> {
     required VoidCallback onPressed,
   }) {
     return Container(
-      decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+      decoration: const BoxDecoration(
+        color: Colors.black54,
+        shape: BoxShape.circle,
+      ),
       child: IconButton(icon: Icon(icon), onPressed: onPressed, iconSize: 28),
     );
   }

@@ -113,30 +113,31 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
       create: (_) => getIt<ChatCubit>(param1: state.stream.id)..loadMessages(),
       child: Stack(
         children: [
-          Center(
-            child: state.remoteUid != 0
-                ? AgoraVideoView(
-                    controller: VideoViewController.remote(
-                      rtcEngine: agoraEngine,
-                      canvas: VideoCanvas(uid: state.remoteUid),
-                      connection: RtcConnection(
-                        channelId: state.stream.channelName,
+          Container(
+            color: Colors.black,
+            child: Center(
+              child: state.remoteUid != 0
+                  ? AgoraVideoView(
+                      controller: VideoViewController.remote(
+                        rtcEngine: agoraEngine,
+                        canvas: VideoCanvas(uid: state.remoteUid),
+                        connection: RtcConnection(
+                          channelId: state.stream.channelName,
+                        ),
                       ),
+                    )
+                  : const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text(
+                          'Waiting for stream...',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
                     ),
-                  )
-                : Container(
-                    color: Colors.black,
-                    child: const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text('Waiting for stream...'),
-                        ],
-                      ),
-                    ),
-                  ),
+            ),
           ),
 
           SafeArea(

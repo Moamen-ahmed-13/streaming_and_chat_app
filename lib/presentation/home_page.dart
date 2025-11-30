@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:streaming_and_chat_app/core/injection.dart';
+import 'package:streaming_and_chat_app/core/cached_avatar.dart';
 import 'package:streaming_and_chat_app/logic/home_cubit/home_cubit.dart';
 import 'package:streaming_and_chat_app/logic/home_cubit/home_state.dart';
 import 'package:streaming_and_chat_app/presentation/profile_page.dart';
@@ -104,10 +104,10 @@ class HomePage extends StatelessWidget {
                                 child: Stack(
                                   children: [
                                     if (stream.thumbnailUrl != null)
-                                      CachedNetworkImage(
+                                      CachedImageBox(
                                         imageUrl: stream.thumbnailUrl!,
-                                        fit: BoxFit.cover,
                                         width: double.infinity,
+                                        fit: BoxFit.cover,
                                       ),
                                     Center(
                                       child: Icon(
@@ -166,14 +166,10 @@ class HomePage extends StatelessWidget {
                               padding: const EdgeInsets.all(12),
                               child: Row(
                                 children: [
-                                  CircleAvatar(
-                                    backgroundImage: stream.streamerPhoto != null
-                                        ? CachedNetworkImageProvider(
-                                            stream.streamerPhoto!)
-                                        : null,
-                                    child: stream.streamerPhoto == null
-                                        ? Text(stream.streamerName[0])
-                                        : null,
+                                  CachedAvatar(
+                                    imageUrl: stream.streamerPhoto,
+                                    fallbackText: stream.streamerName,
+                                    radius: 20,
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(

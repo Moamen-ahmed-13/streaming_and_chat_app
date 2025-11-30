@@ -61,42 +61,53 @@ class BroadcasterCubit extends Cubit<BroadcasterState> {
       await _agoraService.startBroadcasting(channelName);
 
       _currentStream = stream;
-      emit(BroadcasterLive(
-        stream: stream,
-        viewerCount: _viewerCount,
-      ));
+      
+      if (!isClosed) {
+        emit(BroadcasterLive(
+          stream: stream,
+          viewerCount: _viewerCount,
+        ));
+      }
 
       AppLogger.info('Stream started successfully');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to start stream', e, stackTrace);
-      emit(BroadcasterError('Failed to start stream: ${e.toString()}'));
+      if (!isClosed) {
+        emit(BroadcasterError('Failed to start stream: ${e.toString()}'));
+      }
     }
   }
 
   void _updateViewerCount() {
-    if (state is BroadcasterLive && _currentStream != null) {
+    if (state is BroadcasterLive && _currentStream != null && !isClosed) {
       _streamService.updateViewerCount(_currentStream!.id, _viewerCount);
       emit((state as BroadcasterLive).copyWith(viewerCount: _viewerCount));
     }
   }
 
   Future<void> toggleCamera() async {
-    if (state is BroadcasterLive) {
+    if (state is BroadcasterLive && !isClosed) {
       final currentState = state as BroadcasterLive;
       final newState = !currentState.isCameraOn;
       
-      await _agoraService.muteLocalVideo(newState);
-      emit(currentState.copyWith(isCameraOn: newState));
+      await _agoraService.muteLocalVideo(!newState);
+      
+      if (!isClosed) {
+        emit(currentState.copyWith(isCameraOn: newState));
+      }
     }
   }
 
   Future<void> toggleMic() async {
-    if (state is BroadcasterLive) {
+    if (state is BroadcasterLive && !isClosed) {
       final currentState = state as BroadcasterLive;
       final newState = !currentState.isMicOn;
       
-      await _agoraService.muteLocalAudio(newState);
-      emit(currentState.copyWith(isMicOn: newState));
+      await _agoraService.muteLocalAudio(!newState);
+      
+      if (!isClosed) {
+        emit(currentState.copyWith(isMicOn: newState));
+      }
     }
   }
 
@@ -119,13 +130,18 @@ class BroadcasterCubit extends Cubit<BroadcasterState> {
 
         _currentStream = null;
         _viewerCount = 0;
-        emit(BroadcasterEnded());
+        
+        if (!isClosed) {
+          emit(BroadcasterEnded());
+        }
 
         AppLogger.info('Stream ended successfully');
       }
     } catch (e, stackTrace) {
       AppLogger.error('Failed to end stream', e, stackTrace);
-      emit(BroadcasterError('Failed to end stream: ${e.toString()}'));
+      if (!isClosed) {
+        emit(BroadcasterError('Failed to end stream: ${e.toString()}'));
+      }
     }
   }
 

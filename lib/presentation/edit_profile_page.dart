@@ -100,7 +100,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   backgroundColor: Colors.green,
                 ),
               );
-              // Update the auth state with new user data
               context.read<AuthCubit>().checkAuthStatus();
               Navigator.pop(context);
             } else if (state is ProfileError) {
@@ -121,7 +120,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    // Profile Picture
                     GestureDetector(
                       onTap: _pickImage,
                       child: Stack(
@@ -134,13 +132,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     ? CachedNetworkImageProvider(
                                         authState.user.photoUrl!)
                                     : null),
+                            onBackgroundImageError: (_, __) {},
                             child: _selectedImage == null &&
                                     authState.user.photoUrl == null
                                 ? Text(
                                     authState.user.displayName[0].toUpperCase(),
                                     style: const TextStyle(fontSize: 40),
                                   )
-                                : null,
+                                : (_selectedImage == null &&
+                                        authState.user.photoUrl != null
+                                    ? CachedNetworkImage(
+                                        imageUrl: authState.user.photoUrl!,
+                                        imageBuilder: (context, imageProvider) =>
+                                            const SizedBox.shrink(),
+                                        placeholder: (context, url) =>
+                                            const SizedBox.shrink(),
+                                        errorWidget: (context, url, error) => Text(
+                                          authState.user.displayName[0].toUpperCase(),
+                                          style: const TextStyle(fontSize: 40),
+                                        ),
+                                      )
+                                    : null),
                           ),
                           Positioned(
                             bottom: 0,
@@ -162,7 +174,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     const SizedBox(height: 32),
 
-                    // Display Name
                     TextFormField(
                       controller: _nameController,
                       decoration: const InputDecoration(
@@ -182,7 +193,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Bio
                     TextFormField(
                       controller: _bioController,
                       decoration: const InputDecoration(
@@ -196,7 +206,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     const SizedBox(height: 32),
 
-                    // Save Button
                     ElevatedButton(
                       onPressed: isUpdating 
                           ? null 

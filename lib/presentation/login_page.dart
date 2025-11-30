@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                       Icon(
                         Icons.play_circle_filled,
                         size: 80,
-                        color: Theme.of(context).primaryColor,
+                        color: Colors.purple,
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -161,7 +161,8 @@ class _LoginPageState extends State<LoginPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => const ForgotPasswordPage(),
+                                      builder: (_) =>
+                                          const ForgotPasswordPage(),
                                     ),
                                   );
                                 },

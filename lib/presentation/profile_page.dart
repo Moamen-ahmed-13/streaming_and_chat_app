@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:streaming_and_chat_app/core/injection.dart';
+import 'package:streaming_and_chat_app/core/cached_avatar.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_cubit.dart';
 import 'package:streaming_and_chat_app/logic/auth_cubit/auth_state.dart';
 import 'package:streaming_and_chat_app/logic/profile_cubit/profile_cubit.dart';
@@ -32,7 +32,6 @@ class ProfilePage extends StatelessWidget {
               icon: const Icon(Icons.logout),
               onPressed: () {
                 context.read<AuthCubit>().logout();
-                Navigator.pop(context);
               },
             ),
           ],
@@ -79,17 +78,10 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     const SizedBox(height: 32),
 
-                    CircleAvatar(
+                    CachedAvatar(
+                      imageUrl: user.photoUrl,
+                      fallbackText: user.displayName,
                       radius: 60,
-                      backgroundImage: user.photoUrl != null
-                          ? CachedNetworkImageProvider(user.photoUrl!)
-                          : null,
-                      child: user.photoUrl == null
-                          ? Text(
-                              user.displayName[0].toUpperCase(),
-                              style: const TextStyle(fontSize: 40),
-                            )
-                          : null,
                     ),
                     const SizedBox(height: 16),
 
