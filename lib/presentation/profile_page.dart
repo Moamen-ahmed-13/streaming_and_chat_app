@@ -32,6 +32,7 @@ class ProfilePage extends StatelessWidget {
               icon: const Icon(Icons.logout),
               onPressed: () {
                 context.read<AuthCubit>().logout();
+                Navigator.pop(context);
               },
             ),
           ],

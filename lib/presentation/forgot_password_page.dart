@@ -24,7 +24,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   void _sendResetEmail() {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      context.read<AuthCubit>().sendPasswordResetEmail(_emailController.text.trim());
+      context.read<AuthCubit>().sendPasswordResetEmail(
+        _emailController.text.trim(),
+      );
     }
   }
 
@@ -64,7 +66,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         },
         builder: (context, state) {
           final isAuthLoading = state is AuthLoading;
-          
+
           return SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -75,18 +77,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Icon(
-                        Icons.lock_reset,
-                        size: 80,
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      Icon(Icons.lock_reset, size: 80, color: Colors.purple),
                       const SizedBox(height: 24),
                       Text(
                         'Forgot Password?',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -114,12 +111,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           }
                           return null;
                         },
-                        onFieldSubmitted: (_) => (_isLoading || isAuthLoading) ? null : _sendResetEmail(),
+                        onFieldSubmitted: (_) => (_isLoading || isAuthLoading)
+                            ? null
+                            : _sendResetEmail(),
                       ),
                       const SizedBox(height: 24),
 
                       ElevatedButton(
-                        onPressed: (_isLoading || isAuthLoading) ? null : _sendResetEmail,
+                        onPressed: (_isLoading || isAuthLoading)
+                            ? null
+                            : _sendResetEmail,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.all(16),
                           shape: RoundedRectangleBorder(

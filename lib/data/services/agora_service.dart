@@ -6,6 +6,7 @@ import 'package:streaming_and_chat_app/core/logger.dart';
 class AgoraService {
   RtcEngine? _engine;
   bool _isInitialized = false;
+  bool _isInChannel = false; 
 
   String get appId => dotenv.env['AGORA_APP_ID'] ?? '';
 
@@ -27,6 +28,7 @@ class AgoraService {
       ));
 
       _isInitialized = true;
+      _isInChannel = false;
       AppLogger.info('Agora Engine initialized successfully');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to initialize Agora', e, stackTrace);
@@ -38,6 +40,12 @@ class AgoraService {
 
   Future<void> startBroadcasting(String channelName) async {
     try {
+      if (_isInChannel) {
+        AppLogger.warning('Already in a channel, leaving first...');
+        await leaveChannel();
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+
       if (!_isInitialized || _engine == null) {
         await initialize();
       }
@@ -66,15 +74,23 @@ class AgoraService {
         ),
       );
 
+      _isInChannel = true;
       AppLogger.info('Broadcast started successfully');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to start broadcast', e, stackTrace);
+      _isInChannel = false;
       rethrow;
     }
   }
 
   Future<void> joinAsViewer(String channelName) async {
     try {
+      if (_isInChannel) {
+        AppLogger.warning('Already in a channel, leaving first...');
+        await leaveChannel();
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+
       if (!_isInitialized || _engine == null) {
         await initialize();
       }
@@ -86,7 +102,9 @@ class AgoraService {
       await _engine!.setClientRole(role: ClientRoleType.clientRoleAudience);
 
       await _engine!.joinChannel(
-        token: dotenv.env['AGORA_TEMP_TOKEN'] ?? '',
+        token: 
+        // dotenv.env['AGORA_TEMP_TOKEN'] ?? 
+        '',
         channelId: channelName,
         uid: 0,
         options: const ChannelMediaOptions(
@@ -99,23 +117,30 @@ class AgoraService {
         ),
       );
 
+      _isInChannel = true;
       AppLogger.info('Joined as viewer successfully');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to join as viewer', e, stackTrace);
+      _isInChannel = false;
       rethrow;
     }
   }
 
   Future<void> leaveChannel() async {
     try {
-      if (_engine == null) return;
+      if (_engine == null) {
+        _isInChannel = false;
+        return;
+      }
       
       AppLogger.info('Leaving channel...');
       await _engine!.leaveChannel();
       await _engine!.stopPreview();
+      _isInChannel = false;
       AppLogger.info('Left channel successfully');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to leave channel', e, stackTrace);
+      _isInChannel = false;
       rethrow;
     }
   }
@@ -161,6 +186,7 @@ class AgoraService {
       RtcEngineEventHandler(
         onJoinChannelSuccess: (connection, elapsed) {
           AppLogger.info('Join channel success: ${connection.channelId}, localUid: ${connection.localUid}');
+          _isInChannel = true;
         },
         onUserJoined: (connection, remoteUid, elapsed) {
           AppLogger.info('User joined - Channel: ${connection.channelId}, RemoteUID: $remoteUid');
@@ -183,22 +209,32 @@ class AgoraService {
         onConnectionStateChanged: (connection, state, reason) {
           AppLogger.info('Connection state changed - State: $state, Reason: $reason');
         },
+        onLeaveChannel: (connection, stats) {
+          AppLogger.info('Left channel: ${connection.channelId}');
+          _isInChannel = false;
+        },
       ),
     );
   }
 
   RtcEngine? get engine => _engine;
   bool get isInitialized => _isInitialized;
+  bool get isInChannel => _isInChannel;
 
   Future<void> dispose() async {
     try {
       if (_engine == null) return;
       
       AppLogger.info('Disposing Agora Engine...');
-      await _engine!.leaveChannel();
+      
+      if (_isInChannel) {
+        await _engine!.leaveChannel();
+      }
+      
       await _engine!.release();
       _engine = null;
       _isInitialized = false;
+      _isInChannel = false;
       AppLogger.info('Agora Engine disposed');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to dispose Agora', e, stackTrace);
