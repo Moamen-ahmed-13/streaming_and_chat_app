@@ -12,10 +12,7 @@ import 'package:streaming_and_chat_app/logic/viewer_cubit/viewer_state.dart';
 class WatchStreamPage extends StatefulWidget {
   final StreamModel stream;
 
-  const WatchStreamPage({
-    super.key,
-    required this.stream,
-  });
+  const WatchStreamPage({super.key, required this.stream});
 
   @override
   State<WatchStreamPage> createState() => _WatchStreamPageState();
@@ -72,7 +69,11 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                      const Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: Colors.red,
+                      ),
                       const SizedBox(height: 16),
                       Text(state.message),
                       const SizedBox(height: 16),
@@ -95,7 +96,7 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
 
   Widget _buildStreamView(BuildContext context, ViewerWatching state) {
     final agoraEngine = getIt<AgoraService>().engine;
-    
+
     if (agoraEngine == null) {
       return const Center(
         child: Column(
@@ -144,7 +145,7 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -239,7 +240,7 @@ class _WatchStreamPageState extends State<WatchStreamPage> {
                 ),
                 const Spacer(),
                 const SizedBox(
-                  height: 300,
+                  // height: 300,
                   child: ChatWidget(),
                 ),
               ],

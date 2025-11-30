@@ -126,7 +126,7 @@ class _GoLivePageState extends State<GoLivePage> {
   Widget _buildSetupView(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -244,15 +244,13 @@ class _GoLivePageState extends State<GoLivePage> {
                 ),
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.only(bottom: 65),
-                child: const ChatWidget(),
-              ),
+
+              const ChatWidget(),
             ],
           ),
 
           Positioned(
-            bottom: 0,
+            bottom: 65,
             left: 0,
             right: 0,
             child: SafeArea(

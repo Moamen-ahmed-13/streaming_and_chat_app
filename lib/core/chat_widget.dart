@@ -56,10 +56,7 @@ class _ChatWidgetState extends State<ChatWidget> {
         gradient: LinearGradient(
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
-          colors: [
-            Colors.black.withOpacity(0.7),
-            Colors.transparent,
-          ],
+          colors: [Colors.black.withOpacity(0.7), Colors.transparent],
         ),
       ),
       child: Column(
@@ -109,7 +106,8 @@ class _ChatWidgetState extends State<ChatWidget> {
                     itemBuilder: (context, index) {
                       final message = state.messages[index];
                       final authState = context.read<AuthCubit>().state;
-                      final isOwnMessage = authState is AuthAuthenticated &&
+                      final isOwnMessage =
+                          authState is AuthAuthenticated &&
                           message.userId == authState.user.id;
 
                       return Padding(
@@ -176,9 +174,7 @@ class _ChatWidgetState extends State<ChatWidget> {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.black54,
-              border: Border(
-                top: BorderSide(color: Colors.grey[800]!),
-              ),
+              border: Border(top: BorderSide(color: Colors.grey[800]!)),
             ),
             child: SafeArea(
               top: false,
